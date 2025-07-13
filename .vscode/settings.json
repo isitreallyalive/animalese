@@ -1,7 +1,7 @@
 {
   "svelte.enable-ts-plugin": true,
   "files.exclude": {
-    // ".svelte-kit": true,
+    ".svelte-kit": true,
     "node_modules": true,
     "bun.lock": true,
     "src-tauri/target": true

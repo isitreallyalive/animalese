@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "identifier": "dev.newty.animalese",
   "build": {
-    "beforeDevCommand": "bun run dev",
+    "beforeDevCommand": "vite dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "bun run build",
+    "beforeBuildCommand": "vite build",
     "frontendDist": "../build"
   },
   "app": {

@@ -3,14 +3,13 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "tauri dev",
+    "build": "tauri build",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "fmt": "prettier --write . && cd src-tauri && cargo fmt",
     "tauri": "tauri",
-    "shadcn": "bun x shadcn-svelte@latest",
-    "fmt": "prettier --write . && cd src-tauri && cargo fmt"
+    "shadcn": "bun x shadcn-svelte@latest"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
