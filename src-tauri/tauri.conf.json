@@ -4,8 +4,11 @@
     "windows": [
       {
         "title": "animalese",
-        "width": 800,
-        "height": 600
+        "width": 970,
+        "height": 600,
+        "decorations": false,
+        "resizable": false,
+        "center": true
       }
     ],
     "security": {
