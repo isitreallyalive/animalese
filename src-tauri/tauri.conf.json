@@ -1,14 +1,5 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "animalese",
-  "version": "0.1.0",
-  "identifier": "dev.newty.animalese",
-  "build": {
-    "beforeDevCommand": "vite dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "vite build",
-    "frontendDist": "../build"
-  },
   "app": {
     "windows": [
       {
@@ -21,6 +12,12 @@
       "csp": null
     }
   },
+  "build": {
+    "beforeDevCommand": "vite dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "vite build",
+    "frontendDist": "../build"
+  },
   "bundle": {
     "active": true,
     "targets": "all",
@@ -31,5 +28,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  }
+  },
+  "identifier": "dev.newty.animalese",
+  "productName": "animalese",
+  "version": "0.1.0"
 }

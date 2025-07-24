@@ -1,0 +1,3 @@
+bun run --silent ts:fmt --log-level silent
+bun run --silent rs:fmt
+git add -u

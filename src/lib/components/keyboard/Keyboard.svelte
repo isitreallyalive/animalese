@@ -3,52 +3,92 @@
   import Key, { type KeyInfo } from "./Key.svelte";
   import { icons as lucide, type IconifyJSON } from "@iconify-json/lucide";
   import { platform } from "@tauri-apps/plugin-os";
+  import { SvelteSet } from "svelte/reactivity";
+  import { listen } from "@tauri-apps/api/event";
 
-  function icon(iconSet: IconifyJSON, iconName: string, label?: string) {
-    return { icon: getIconData(iconSet, iconName)!, label };
+  type KeyInfoWithEvent = Omit<KeyInfo, "active"> & {
+    event: string;
+  };
+
+  function icon(
+    iconSet: IconifyJSON,
+    iconName: string,
+    event: string,
+    label?: string,
+  ): KeyInfoWithEvent {
+    return { icon: getIconData(iconSet, iconName)!, event, label };
   }
-  const label = (label: string) => ({ label });
-  const split = (letters: string) => letters.split("").map((c) => label(c));
+  const label = (label: string, event: string): KeyInfoWithEvent => ({
+    label,
+    event,
+  });
+  const split = (letters: string, prefix: string = "Key"): KeyInfoWithEvent[] =>
+    letters
+      .split("")
+      .map((c) => label(c.toUpperCase(), `${prefix}${c.toUpperCase()}`));
 
-  const layout: KeyInfo[][] = [
-    [...split("`1234567890-="), icon(lucide, "arrow-left", "Backspace")],
+  const layout: KeyInfoWithEvent[][] = [
     [
-      icon(lucide, "arrow-right-to-line", "Tab"),
+      label("`", "Unknown(223)"),
+      ...split("1234567890", "Num"),
+      label("-", "Minus"),
+      label("=", "Equal"),
+      icon(lucide, "arrow-left", "Backspace", "Backspace"),
+    ],
+    [
+      icon(lucide, "arrow-right-to-line", "Tab", "Tab"),
       ...split("qwertyuiop"),
-      label("["),
-      label("]"),
-      label("\\"),
+      label("[", "LeftBracket"),
+      label("]", "RightBracket"),
+      label("\\", "BackSlash"),
     ],
     [
-      label("Caps"),
+      label("Caps", "CapsLock"),
       ...split("asdfghjkl"),
-      label(";"),
-      label("'"),
-      icon(lucide, "corner-down-left", "Enter"),
+      label(";", "SemiColon"),
+      label("'", "BackQuote"),
+      icon(lucide, "corner-down-left", "Return", "Enter"),
     ],
     [
-      icon(lucide, "arrow-big-up-dash", "Shift"),
+      icon(lucide, "arrow-big-up-dash", "ShiftLeft", "Shift"),
       ...split("zxcvbnm"),
-      label(","),
-      label("."),
-      label("/"),
-      icon(lucide, "arrow-big-up-dash", "Shift"),
+      label(",", "Comma"),
+      label(".", "Dot"),
+      label("/", "Slash"),
+      icon(lucide, "arrow-big-up-dash", "ShiftRight", "Shift"),
     ],
     [
-      icon(lucide, "command", "Ctrl"),
-      label(platform() === "windows" ? "Win" : "Cmd"),
-      label("Alt"),
-      label(" "),
-      label("Alt"),
-      label("Ctrl")
+      icon(lucide, "command", "ControlLeft", "Ctrl"),
+      label(platform() === "windows" ? "Win" : "Cmd", "MetaLeft"),
+      label("Alt", "Alt"),
+      label(" ", "Space"),
+      label("Alt", "AltGr"),
+      label("Ctrl", "ControlRight"),
     ],
   ];
+
+  console.log(layout);
+  let activeKeys = new SvelteSet<string>();
+  $effect(() => {
+    // setup
+    const press = listen<string>("press", (e) => activeKeys.add(e.payload));
+    const release = listen<string>("release", (e) =>
+      activeKeys.delete(e.payload),
+    );
+
+    // teardown
+    return () => {
+      press.then((unlisten) => unlisten());
+      release.then((unlisten) => unlisten());
+    };
+  });
 </script>
 
 {#each layout as row}
   <div class="mb-2 flex justify-center">
-    {#each row as key}
-      <Key {...key} />
+    {#each row as { event: key, ...data }}
+      {@const active = activeKeys.has(key)}
+      <Key {active} {...data} />
     {/each}
   </div>
 {/each}
