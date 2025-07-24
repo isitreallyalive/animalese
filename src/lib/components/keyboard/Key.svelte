@@ -13,13 +13,11 @@
 </script>
 
 <Button
-  class="m-1 flex items-center gap-2 *:align-middle {active
-    ? 'bg-red-400'
-    : ''}"
+  class="m-1 flex items-center gap-2 *:align-middle {active ? 'bg-honey' : ''}"
   style={`width: ${width * 40}px`}
 >
   {#if icon}
-    <Icon {icon} class="inline-block h-5 w-5" />
+    <Icon {icon} class="inline-block h-6 w-6 *:stroke-3" />
   {/if}
   {#if label}
     <span class="text-base">{label}</span>

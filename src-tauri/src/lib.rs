@@ -31,6 +31,7 @@ fn emit(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        // plugins
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             // if the app is launched again, just focus on the already open instance
             let _ = app
@@ -76,8 +77,6 @@ pub fn run() {
 
             Ok(())
         })
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_opener::init())
         // .invoke_handler(tauri::generate_handler![])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

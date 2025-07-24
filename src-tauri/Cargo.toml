@@ -17,10 +17,8 @@ strip = "debuginfo"
 
 [dependencies]
 tauri = { version = "2.7.0", features = [] }
-tauri-plugin-opener = "2.4.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.141"
-tauri-plugin-os = "2.3.0"
 rdev = "0.5.3"
 
 [build-dependencies]

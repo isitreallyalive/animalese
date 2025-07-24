@@ -5,6 +5,7 @@
   import layout from "$lib/layout";
 
   let activeKeys = new SvelteSet<string>();
+
   $effect(() => {
     // setup
     const press = listen<string>("press", (e) => activeKeys.add(e.payload));

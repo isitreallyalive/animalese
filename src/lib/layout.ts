@@ -2,7 +2,6 @@ import type { KeyInfo } from "$lib/components/keyboard/Key.svelte";
 import { icons as lucide } from "@iconify-json/lucide";
 import type { IconifyJSON } from "@iconify/svelte";
 import { getIconData } from "@iconify/utils";
-import { platform } from "@tauri-apps/plugin-os";
 
 type KeyInfoWithEvent = Omit<KeyInfo, "active"> & {
   event: string;
@@ -37,7 +36,7 @@ const layout: KeyInfoWithEvent[][] = [
     ...split("1234567890", "Num"),
     label("-", "Minus"),
     label("=", "Equal"),
-    icon(lucide, "arrow-left", "Backspace", "Backspace", 3),
+    icon(lucide, "arrow-left", "Backspace", "Backspace", 3.25),
   ],
   [
     icon(lucide, "arrow-right-to-line", "Tab", "Tab", 1.75),
@@ -63,9 +62,8 @@ const layout: KeyInfoWithEvent[][] = [
   ],
   [
     icon(lucide, "command", "ControlLeft", "Ctrl", 1.75),
-    label(platform() === "windows" ? "Win" : "Cmd", "MetaLeft", 1.25),
     label("Alt", "Alt", 1.25),
-    label(" ", "Space", 7.25),
+    label(" ", "Space", 9.5),
     label("Alt", "AltGr", 1.25),
     icon(lucide, "command", "ControlRight", "Ctrl", 1.75),
   ],
