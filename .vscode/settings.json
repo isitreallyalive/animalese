@@ -1,8 +1,12 @@
 {
   "files.exclude": {
+    // build artifacts
     ".svelte-kit": true,
+    "build": true,
+    // bun dependencies
     "node_modules": true,
     "bun.lock": true,
+    // rust target
     "src-tauri/target": true
   },
   "svelte.enable-ts-plugin": true

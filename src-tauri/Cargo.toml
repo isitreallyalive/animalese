@@ -9,13 +9,22 @@ edition = "2021"
 name = "animalese_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+# we may lose the debugger, but i think it's worth it for the improved dx!
+# comment out if you want the debugger
+[profile.dev]
+debug = 0
+strip = "debuginfo"
+
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-tauri-plugin-os = "2"
+tauri = { version = "2.7.0", features = [] }
+tauri-plugin-opener = "2.4.0"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.141"
+tauri-plugin-os = "2.3.0"
 rdev = "0.5.3"
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.3.1", features = [] }
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2.3.2"

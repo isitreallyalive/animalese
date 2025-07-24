@@ -2,8 +2,9 @@ use rdev::{EventType, Key};
 use std::{
     collections::HashSet,
     sync::{Arc, Mutex},
+    time::Duration,
 };
-use tauri::{AppHandle, DeviceEventFilter, Emitter};
+use tauri::{AppHandle, DeviceEventFilter, Emitter, Manager};
 
 /// Emit a key event to the frontend
 fn emit(
@@ -30,6 +31,13 @@ fn emit(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            // if the app is launched again, just focus on the already open instance
+            let _ = app
+                .get_webview_window("main")
+                .map(|w| w.set_focus().ok())
+                .flatten();
+        }))
         // don't let tauri consume the events when focused
         .device_event_filter(DeviceEventFilter::Always)
         .setup(|app| {
@@ -58,7 +66,7 @@ pub fn run() {
                             }
                         }) {
                             eprintln!("Error in rdev::listen: {:?}. Restarting listener...", e);
-                            std::thread::sleep(std::time::Duration::from_secs(1));
+                            std::thread::sleep(Duration::from_millis(100));
                         } else {
                             break;
                         }
