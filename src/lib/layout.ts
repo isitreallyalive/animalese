@@ -1,36 +1,36 @@
-import type { KeyInfo } from "$lib/components/keyboard/Key.svelte";
+import type { Props } from "$lib/components/keyboard/Key.svelte";
 import { icons as lucide } from "@iconify-json/lucide";
 import type { IconifyJSON } from "@iconify/svelte";
 import { getIconData } from "@iconify/utils";
 
-type KeyInfoWithEvent = Omit<KeyInfo, "active"> & {
-  event: string;
-};
+type KeyInfo = Omit<Props, "active" | "simulated">;
 
 function icon(
   iconSet: IconifyJSON,
   iconName: string,
-  event: string,
+  key: string,
   label?: string,
   width = 1,
-): KeyInfoWithEvent {
-  return { icon: getIconData(iconSet, iconName)!, event, label, width };
+): KeyInfo {
+  return {
+    icon: getIconData(iconSet, iconName)!,
+    key,
+    label,
+    width,
+  };
 }
-const label = (label: string, event: string, width = 1): KeyInfoWithEvent => ({
-  label,
-  event,
-  width,
-});
-const split = (
-  letters: string,
-  prefix: string = "Key",
-  width = 1,
-): KeyInfoWithEvent[] =>
-  letters
+
+function label(label: string, key: string, width = 1): KeyInfo {
+  return { label, key, width };
+}
+
+function split(letters: string, prefix: string = "Key", width = 1): KeyInfo[] {
+  return letters
     .split("")
     .map((c) => label(c.toUpperCase(), `${prefix}${c.toUpperCase()}`, width));
+}
 
-const layout: KeyInfoWithEvent[][] = [
+const layout: KeyInfo[][] = [
   [
     label("`", "Unknown(223)"),
     ...split("1234567890", "Num"),
