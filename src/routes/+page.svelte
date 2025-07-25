@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Keyboard from "$lib/components/keyboard";
+	import Keyboard from "$lib/components/keyboard";
 </script>
 
 <Keyboard />

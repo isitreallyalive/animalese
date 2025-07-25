@@ -1,8 +1,9 @@
 <script lang="ts">
-  import Header from "$lib/components/header";
-  import "../app.css";
+	import "../app.css";
 
-  let { children } = $props();
+	import Header from "$lib/components/header";
+
+	let { children } = $props();
 </script>
 
 <Header />

@@ -55,7 +55,7 @@ fn emit(
     }
 
     if press ^ this_set.contains(&key) {
-        let _ = handle.emit_to(
+        handle.emit_to(
             "main",
             if press { "press" } else { "release" },
             format!("{:?}", key),
@@ -78,8 +78,7 @@ pub fn run() {
             // if the app is launched again, just focus on the already open instance
             let _ = app
                 .get_webview_window("main")
-                .map(|w| w.set_focus().ok())
-                .flatten();
+                .and_then(|w| w.set_focus().ok());
         }))
         // don't let tauri consume the events when focused
         .device_event_filter(DeviceEventFilter::Always)
@@ -94,19 +93,17 @@ pub fn run() {
             {
                 let handle = handle.clone();
                 let key_states = key_states.clone();
-                thread::spawn(move || loop {
-                    if let Err(e) = rdev::listen({
+                thread::spawn(move || {
+                    while let Err(e) = rdev::listen({
                         let handle = handle.clone();
                         let key_states = key_states.clone();
                         move |event| {
                             let mut ks = key_states.lock().unwrap();
-                            let _ = emit(event.event_type, &handle, &mut *ks, false);
+                            let _ = emit(event.event_type, &handle, &mut ks, false);
                         }
                     }) {
                         eprintln!("Error in rdev::listen: {:?}. Restarting listener...", e);
                         thread::sleep(Duration::from_millis(100));
-                    } else {
-                        break;
                     }
                 });
             }
@@ -118,7 +115,7 @@ pub fn run() {
                 thread::spawn(move || {
                     while let Ok(event_type) = rx.recv() {
                         let mut ks = key_states.lock().unwrap();
-                        let _ = emit(event_type, &handle, &mut *ks, true);
+                        let _ = emit(event_type, &handle, &mut ks, true);
                     }
                 });
             }

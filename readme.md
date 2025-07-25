@@ -5,7 +5,6 @@
 - updater
 - tray icon
 - github actions
-- linter
 
 ## design
 
