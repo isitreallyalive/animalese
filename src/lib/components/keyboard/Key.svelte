@@ -2,20 +2,20 @@
   import { Button } from "../ui/button";
   import Icon, { type IconifyIcon } from "@iconify/svelte";
   import { invoke } from "@tauri-apps/api/core";
-  import type { EmittedKey } from "./Keyboard.svelte";
 
-  export interface Props extends EmittedKey {
+  export interface Props {
     active: boolean;
     label?: string;
     icon?: IconifyIcon;
     width: number;
+    key: string;
   }
 
   async function simulate(press: boolean) {
     return await invoke("simulate", { key, press });
   }
 
-  const { active, label, icon, width, key, simulated }: Props = $props();
+  const { active, label, icon, width, key }: Props = $props();
 </script>
 
 <Button

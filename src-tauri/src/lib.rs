@@ -25,39 +25,45 @@ fn simulate(
     Ok(())
 }
 
-#[derive(Clone, serde::Serialize)]
-struct EmittedKey {
-    key: Key,
-    simulated: bool,
+struct KeyStates {
+    real: HashSet<Key>,
+    simulated: HashSet<Key>,
 }
 
 /// Emit a key to the frontend
 fn emit(
     event_type: EventType,
     handle: &AppHandle,
-    pressed: &mut HashSet<Key>,
+    key_states: &mut KeyStates,
+    simulated: bool,
 ) -> tauri::Result<()> {
-    // todo: distinguish between lctrl and altgr
     let (press, key) = match event_type {
         EventType::KeyPress(key) => (true, key),
         EventType::KeyRelease(key) => (false, key),
         _ => return Ok(()),
     };
 
-    if press ^ pressed.contains(&key) {
-        println!("{:?}", key);
+    let (this_set, other_set) = if simulated {
+        (&mut key_states.simulated, &mut key_states.real)
+    } else {
+        (&mut key_states.real, &mut key_states.simulated)
+    };
+
+    // if the other set contains the key, ignore this event
+    if other_set.contains(&key) {
+        return Ok(());
+    }
+
+    if press ^ this_set.contains(&key) {
         let _ = handle.emit_to(
             "main",
             if press { "press" } else { "release" },
-            EmittedKey {
-                key,
-                simulated: false,
-            },
+            format!("{:?}", key),
         )?;
         if press {
-            pressed.insert(key);
+            this_set.insert(key);
         } else {
-            pressed.remove(&key);
+            this_set.remove(&key);
         }
     }
     Ok(())
@@ -79,21 +85,26 @@ pub fn run() {
         .device_event_filter(DeviceEventFilter::Always)
         .setup(move |app| {
             let handle = app.handle();
-            let pressed = Arc::new(Mutex::new(HashSet::new()));
+            let key_states = Arc::new(Mutex::new(KeyStates {
+                real: HashSet::new(),
+                simulated: HashSet::new(),
+            }));
 
-            // keypress listener thread
+            // keypress listener thread (real)
             {
                 let handle = handle.clone();
-                let pressed = pressed.clone();
+                let key_states = key_states.clone();
                 thread::spawn(move || loop {
-                    let handle = handle.clone();
-                    let pressed = pressed.clone();
-                    if let Err(e) = rdev::listen(move |event| {
-                        let mut pressed = pressed.lock().unwrap();
-                        let _ = emit(event.event_type, &handle, &mut pressed);
+                    if let Err(e) = rdev::listen({
+                        let handle = handle.clone();
+                        let key_states = key_states.clone();
+                        move |event| {
+                            let mut ks = key_states.lock().unwrap();
+                            let _ = emit(event.event_type, &handle, &mut *ks, false);
+                        }
                     }) {
                         eprintln!("Error in rdev::listen: {:?}. Restarting listener...", e);
-                        std::thread::sleep(Duration::from_millis(100));
+                        thread::sleep(Duration::from_millis(100));
                     } else {
                         break;
                     }
@@ -103,10 +114,11 @@ pub fn run() {
             // simulated keypress thread
             {
                 let handle = handle.clone();
+                let key_states = key_states.clone();
                 thread::spawn(move || {
                     while let Ok(event_type) = rx.recv() {
-                        let mut pressed = pressed.lock().unwrap();
-                        let _ = emit(event_type, &handle, &mut pressed);
+                        let mut ks = key_states.lock().unwrap();
+                        let _ = emit(event_type, &handle, &mut *ks, true);
                     }
                 });
             }

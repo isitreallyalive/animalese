@@ -3,7 +3,7 @@ import { icons as lucide } from "@iconify-json/lucide";
 import type { IconifyJSON } from "@iconify/svelte";
 import { getIconData } from "@iconify/utils";
 
-type KeyInfo = Omit<Props, "active" | "simulated">;
+type KeyInfo = Omit<Props, "active">;
 
 function icon(
   iconSet: IconifyJSON,
