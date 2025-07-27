@@ -1,5 +1,5 @@
 bun run --silent ts:lint
 bun run --silent ts:fmt --log-level silent
-bun run --silent cargo clippy --fix --allow-dirty --allow-staged
+bun run --silent cargo --quiet clippy --fix --allow-dirty --allow-staged
 bun run --silent cargo fmt
 git add -u
