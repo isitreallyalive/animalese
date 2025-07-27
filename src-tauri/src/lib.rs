@@ -1,7 +1,10 @@
 use crossbeam_channel::unbounded;
 use tauri::{DeviceEventFilter, Manager};
 
+mod audio;
 mod keyboard;
+
+// todo: thiserror
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

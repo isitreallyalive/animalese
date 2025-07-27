@@ -1,3 +1,4 @@
+use crate::audio::{AudioPlayer, VOICE};
 use crossbeam_channel::{Receiver, Sender};
 use rdev::{EventType, Key};
 use std::{
@@ -18,18 +19,22 @@ pub fn setup(handle: AppHandle, rx: Receiver<EventType>) {
         real: HashSet::new(),
         simulated: HashSet::new(),
     }));
+    let player = Arc::new(Mutex::new(AudioPlayer::new().unwrap()));
 
     // keypress listener thread (real)
     {
         let handle = handle.clone();
         let key_states = key_states.clone();
+        let player = player.clone();
         thread::spawn(move || {
             while let Err(e) = rdev::listen({
                 let handle = handle.clone();
                 let key_states = key_states.clone();
+                let player = player.clone();
                 move |event| {
                     let mut ks = key_states.lock().unwrap();
-                    let _ = emit(event.event_type, &handle, &mut ks, false);
+                    let mut p = player.lock().unwrap();
+                    let _ = emit(event.event_type, &handle, &mut p, &mut ks, false);
                 }
             }) {
                 eprintln!("Error in rdev::listen: {:?}. Restarting listener...", e);
@@ -42,10 +47,12 @@ pub fn setup(handle: AppHandle, rx: Receiver<EventType>) {
     {
         let handle = handle.clone();
         let key_states = key_states.clone();
+        let player = player.clone();
         thread::spawn(move || {
             while let Ok(event_type) = rx.recv() {
                 let mut ks = key_states.lock().unwrap();
-                let _ = emit(event_type, &handle, &mut ks, true);
+                let mut p = player.lock().unwrap();
+                let _ = emit(event_type, &handle, &mut p, &mut ks, true);
             }
         });
     }
@@ -72,6 +79,7 @@ pub fn simulate(
 fn emit(
     event_type: EventType,
     handle: &AppHandle,
+    player: &mut AudioPlayer,
     key_states: &mut KeyStates,
     simulated: bool,
 ) -> tauri::Result<()> {
@@ -98,7 +106,9 @@ fn emit(
             if press { "press" } else { "release" },
             format!("{:?}", key),
         )?;
+
         if press {
+            player.play(vec![VOICE.get_file("Boy_A.ogg").unwrap()]);
             this_set.insert(key);
         } else {
             this_set.remove(&key);
