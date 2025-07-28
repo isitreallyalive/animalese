@@ -1,4 +1,4 @@
-use bincode::Encode;
+use bincode::{Decode, Encode, decode_from_slice, error::DecodeError};
 use strum::{AsRefStr, EnumString};
 
 pub const HEADER: [u8; 5] = [
@@ -7,7 +7,7 @@ pub const HEADER: [u8; 5] = [
 ];
 
 #[repr(C)]
-#[derive(AsRefStr, Clone, Copy, Debug, Default, Encode, EnumString)]
+#[derive(AsRefStr, Clone, Copy, Debug, Decode, Default, Encode, EnumString)]
 pub enum Game {
     #[strum(serialize = "ac")]
     AnimalCrossing,
@@ -17,7 +17,7 @@ pub enum Game {
 }
 
 #[repr(C)]
-#[derive(AsRefStr, Clone, Copy, Debug, Default, Encode, EnumString)]
+#[derive(AsRefStr, Clone, Copy, Debug, Decode, Default, Encode, EnumString)]
 pub enum Language {
     #[strum(serialize = "jp")]
     Japanese,
@@ -27,7 +27,7 @@ pub enum Language {
 }
 
 #[repr(C)]
-#[derive(Debug, Encode)]
+#[derive(Debug, Decode, Encode)]
 pub struct Metadata {
     pub game: Game,
     pub language: Language,
@@ -50,7 +50,12 @@ pub struct Entry {
     length: u32,
 }
 
-struct VoiceFont {
+#[derive(Debug, Decode)]
+pub struct VoiceFont {
     metadata: Metadata,
-    entries: Vec<Entry>,
+    // entries: Vec<Entry>,
+}
+
+pub fn decode(data: &[u8]) -> Result<VoiceFont, DecodeError> {
+    decode_from_slice(&data[HEADER.len()..], bincode::config::standard()).map(|(v, _)| v)
 }
