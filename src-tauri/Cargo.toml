@@ -1,31 +1,26 @@
 [package]
 name = "animalese"
-version = "0.0.0"
+version.workspace = true
 publish = false
-authors = ["newt <hi@newty.dev>"]
-edition = "2021"
+authors.workspace = true
+edition.workspace = true
 
 [lib]
 name = "animalese_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-# we may lose the debugger, but i think it's worth it for the improved dx!
-# comment out if you want the debugger
-[profile.dev]
-debug = 0
-strip = "debuginfo"
-
 [dependencies]
-tauri = { version = "2.7.0", features = [] }
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.141"
-rdev = { version = "0.5.3", features = ["serialize"] }
-crossbeam-channel = "0.5.15"
-rodio = { version = "0.21.1", default-features = false, features = ["playback", "vorbis"] }
-include_dir = "0.7.4"
+tauri = { workspace = true, features = [] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+rdev = { workspace = true, features = ["serialize"] }
+crossbeam-channel = { workspace = true }
+rodio = { workspace = true, features = ["playback", "vorbis"] }
+include_dir = { workspace = true }
+voice = { workspace = true }
 
 [build-dependencies]
-tauri-build = { version = "2.3.1", features = [] }
+tauri-build = { workspace = true, features = [] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-single-instance = "2.3.2"

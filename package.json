@@ -8,7 +8,6 @@
 		"fmt": "bun run --silent ts:fmt && bun run --silent cargo fmt",
 		"ts:fmt": "NODE_NO_WARNINGS=1 NODE_OPTIONS=\"--experimental-strip-types\" prettier --write .",
 		"ts:lint": "eslint --fix src",
-		"cargo": "cd src-tauri && cargo",
 		"tauri": "tauri",
 		"shadcn": "shadcn-svelte",
 		"prepare": "husky"

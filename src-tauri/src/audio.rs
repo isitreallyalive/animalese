@@ -3,8 +3,6 @@ use std::io::Cursor;
 use include_dir::File;
 use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, StreamError};
 
-pub const VOICE: include_dir::Dir = include_dir::include_dir!("assets/voices/ac/jp/boy");
-
 pub struct AudioPlayer {
     stream: OutputStream,
     sinks: Vec<Sink>,
@@ -29,6 +27,7 @@ impl AudioPlayer {
             .map(|sound| Decoder::new_vorbis(Cursor::new(sound.contents().to_vec())))
             .filter_map(|decoder| decoder.ok())
             .for_each(|sound| sink.append(sound));
+
         self.sinks.push(sink);
     }
 }

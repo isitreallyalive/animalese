@@ -7,7 +7,7 @@
 		"node_modules": true,
 		"bun.lock": true,
 		// rust target
-		"src-tauri/target": true
+		"target": true
 	},
 
 	"svelte.enable-ts-plugin": true

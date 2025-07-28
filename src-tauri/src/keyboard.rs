@@ -1,4 +1,4 @@
-use crate::audio::{AudioPlayer, VOICE};
+use crate::audio::AudioPlayer;
 use crossbeam_channel::{Receiver, Sender};
 use rdev::{EventType, Key};
 use std::{
@@ -108,7 +108,7 @@ fn emit(
         )?;
 
         if press {
-            player.play(vec![VOICE.get_file("Boy_A.ogg").unwrap()]);
+            // player.play(vec![VOICE.get_file("a/_.ogg").unwrap()]);
             this_set.insert(key);
         } else {
             this_set.remove(&key);
