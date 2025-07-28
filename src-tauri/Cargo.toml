@@ -16,7 +16,6 @@ serde_json = { workspace = true }
 rdev = { workspace = true, features = ["serialize"] }
 crossbeam-channel = { workspace = true }
 rodio = { workspace = true, features = ["playback", "vorbis"] }
-include_dir = { workspace = true }
 voice = { workspace = true }
 
 [build-dependencies]

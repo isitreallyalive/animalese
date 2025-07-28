@@ -1,7 +1,4 @@
-use std::io::Cursor;
-
-use include_dir::File;
-use rodio::{Decoder, OutputStream, OutputStreamBuilder, Sink, StreamError};
+use rodio::{OutputStream, OutputStreamBuilder, Sink, StreamError};
 
 pub struct AudioPlayer {
     stream: OutputStream,
@@ -16,18 +13,18 @@ impl AudioPlayer {
         })
     }
 
-    pub fn play(&mut self, sounds: Vec<&File>) {
+    pub fn play(&mut self) {
         // remove empty sinks
         self.sinks.retain(|sink| !sink.empty());
 
-        // play the sounds in a new sink
-        let sink = Sink::connect_new(self.stream.mixer());
-        sounds
-            .iter()
-            .map(|sound| Decoder::new_vorbis(Cursor::new(sound.contents().to_vec())))
-            .filter_map(|decoder| decoder.ok())
-            .for_each(|sound| sink.append(sound));
+        // // play the sounds in a new sink
+        // let sink = Sink::connect_new(self.stream.mixer());
+        // sounds
+        //     .iter()
+        //     .map(|sound| Decoder::new_vorbis(Cursor::new(sound.contents().to_vec())))
+        //     .filter_map(|decoder| decoder.ok())
+        //     .for_each(|sound| sink.append(sound));
 
-        self.sinks.push(sink);
+        // self.sinks.push(sink);
     }
 }
